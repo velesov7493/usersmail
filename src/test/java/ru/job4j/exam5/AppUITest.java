@@ -64,4 +64,27 @@ public class AppUITest {
         ui.execute();
         assertEquals(expected, out.toString());
     }
+
+    @Test
+    public void whenAllDifferent() {
+        Input in = new StubInput(new String[] {
+                "5",
+                "user1 -> xxx@ya.ru, foo@abc.net",
+                "user2 -> foo@gmail.com, ups@nix.ru",
+                "user3 -> dude@pisem.net, vasya@rambler.ru",
+                "user4 -> ups@pisem.net, aaa@gmail.com",
+                "user5 -> xyz@pisem.net"
+        });
+        StubOutput out = new StubOutput();
+        Input vin = new ValidateInput(in, out);
+        AppUI ui = new AppUI(vin, out);
+        String expected =
+                "user1 -> foo@abc.net, xxx@ya.ru\r\n"
+                + "user2 -> ups@nix.ru, foo@gmail.com\r\n"
+                + "user5 -> xyz@pisem.net\r\n"
+                + "user3 -> vasya@rambler.ru, dude@pisem.net\r\n"
+                + "user4 -> aaa@gmail.com, ups@pisem.net\r\n";
+        ui.execute();
+        assertEquals(expected, out.toString());
+    }
 }
