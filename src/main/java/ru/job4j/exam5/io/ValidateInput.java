@@ -43,7 +43,9 @@ public class ValidateInput implements Input {
             invalid = !m.matches();
             if (invalid) {
                 output.println("Ошибка синтаксиса в строке!");
-                output.println("Повторите ввод в формате: userName -> email1, email2, ... emailN");
+                output.println(
+                    "Повторите ввод в формате: userName -> email1[, email2, ... emailN]"
+                );
             }
         } while (invalid);
         return in;

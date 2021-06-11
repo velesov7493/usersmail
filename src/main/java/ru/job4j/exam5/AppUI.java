@@ -22,7 +22,7 @@ public class AppUI {
     private Input input;
     private Output output;
     // <Email, МножествоПользователей>
-    private HashMap<String, HashSet<String>> mails;
+    private HashMap<String, LinkedHashSet<String>> mails;
 
     public AppUI(Input aInput, Output aOutput) {
         input = aInput;
@@ -36,7 +36,7 @@ public class AppUI {
      * m - количество уникальных email
      */
 
-    private void eliminateUsers() {
+    private void reduceUsers() {
         ArrayDeque<Record> replaces = new ArrayDeque<>();
         for (Set<String> users : mails.values()) {
             if (users.size() > 1) {
@@ -63,13 +63,13 @@ public class AppUI {
      */
 
     private void report() {
-        HashMap<String, HashSet<String>> packMails = new HashMap<>();
+        HashMap<String, LinkedHashSet<String>> packMails = new HashMap<>();
         for (String email : mails.keySet()) {
             Set<String> users = mails.get(email);
             for (String user : users) {
-                HashSet<String> ms = packMails.get(user);
+                LinkedHashSet<String> ms = packMails.get(user);
                 if (ms == null) {
-                    ms = new HashSet<>();
+                    ms = new LinkedHashSet<>();
                     ms.add(email);
                     packMails.put(user, ms);
                 } else {
@@ -93,7 +93,7 @@ public class AppUI {
 
     private void readData() {
         int n = input.askInt("Количество пользователей: ");
-        HashSet<String> users;
+        LinkedHashSet<String> users;
         for (int i = 0; i < n; i++) {
             String line = input.askExpression((i + 1) + ": ");
             String[] msg = line.split("->", 2);
@@ -105,7 +105,7 @@ public class AppUI {
                 if (users != null) {
                     users.add(msg[0]);
                 } else {
-                    users = new HashSet<>();
+                    users = new LinkedHashSet<>();
                     users.add(msg[0]);
                     mails.put(m[j], users);
                 }
@@ -120,7 +120,7 @@ public class AppUI {
      */
     public void execute() {
         readData();
-        eliminateUsers();
+        reduceUsers();
         report();
     }
 
