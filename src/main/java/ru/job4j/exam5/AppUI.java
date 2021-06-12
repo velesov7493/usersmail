@@ -6,23 +6,12 @@ import java.util.*;
 
 public class AppUI {
 
-    final class Record {
-
-        private String oldValue;
-        private String newValue;
-
-        public Record(String aOldValue, String aNewValue) {
-            oldValue = aOldValue;
-            newValue = aNewValue;
-        }
-    }
-
     private static AppUI instance;
 
     private Input input;
     private Output output;
     // <Email, МножествоПользователей>
-    private HashMap<String, LinkedHashSet<String>> mails;
+    private Map<String, Set<String>> mails;
 
     public AppUI(Input aInput, Output aOutput) {
         input = aInput;
@@ -31,70 +20,14 @@ public class AppUI {
     }
 
     /**
-     * Время вполнения ≈ O(2nm),где
-     * n - количество одинаковых пользователей
-     * m - количество уникальных email
-     */
-
-    private void reduceUsers() {
-        ArrayDeque<Record> replaces = new ArrayDeque<>();
-        for (Set<String> users : mails.values()) {
-            if (users.size() > 1) {
-                String[] elements = users.toArray(new String[users.size()]);
-                for (int i = 1; i < elements.length; i++) {
-                    replaces.push(new Record(elements[i], elements[0]));
-                }
-            }
-        }
-        while (!replaces.isEmpty()) {
-            Record entry = replaces.pop();
-            for (Set<String> users : mails.values()) {
-                if (!users.contains(entry.oldValue)) {
-                    continue;
-                }
-                users.remove(entry.oldValue);
-                users.add(entry.newValue);
-            }
-        }
-    }
-
-    /**
-     * Время вполнения - O(2m), где m - количество адресов email
-     */
-
-    private void report() {
-        HashMap<String, LinkedHashSet<String>> packMails = new HashMap<>();
-        for (String email : mails.keySet()) {
-            Set<String> users = mails.get(email);
-            for (String user : users) {
-                LinkedHashSet<String> ms = packMails.get(user);
-                if (ms == null) {
-                    ms = new LinkedHashSet<>();
-                    ms.add(email);
-                    packMails.put(user, ms);
-                } else {
-                    ms.add(email);
-                }
-            }
-        }
-        for (String user : packMails.keySet()) {
-            String line = user + " -> ";
-            for (String email : packMails.get(user)) {
-                line += email + ", ";
-            }
-            line = line.substring(0, line.length() - 2);
-            output.println(line);
-        }
-    }
-
-    /**
      * Время выполнения операций ввода зависит от пользователя
+     * Поэтому в этой задаче производительность зависит от того,
+     * как будет обработан ввод пользователя.
      * Время вполнения без учета ввода-вывода - O(m), где m - количество адресов email
      */
-
     private void readData() {
         int n = input.askInt("Количество пользователей: ");
-        LinkedHashSet<String> users;
+        Set<String> users;
         for (int i = 0; i < n; i++) {
             String line = input.askExpression((i + 1) + ": ");
             String[] msg = line.split("->", 2);
@@ -121,8 +54,15 @@ public class AppUI {
      */
     public void execute() {
         readData();
-        reduceUsers();
-        report();
+        Map<String, Set<String>> data = Logic.reduceUsers(mails);
+        for (String user : data.keySet()) {
+            String line = user + " -> ";
+            for (String email : data.get(user)) {
+                line += email + ", ";
+            }
+            line = line.substring(0, line.length() - 2);
+            output.println(line);
+        }
     }
 
     public static void main(String[] args) {
