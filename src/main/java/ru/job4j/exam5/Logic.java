@@ -19,6 +19,9 @@ public interface Logic {
      * Перевернуть Map
      * @param data - Map<Key, Set<Values>>
      * @return Map<Value, Set<Keys>>
+     *
+     * Время выполнения O(v),
+     * где v - количество значений во всех множествах карты
      */
     static Map<String, Set<String>> invert(Map<String, Set<String>> data) {
         Map<String, Set<String>> result = new HashMap<>();
@@ -42,6 +45,10 @@ public interface Logic {
      * Сократить пользователей в карте <Email, Set<UserName>> и выдать обратную карту
      * @param data - карта мейлов со множествами пользователей <Email, Set<UserName>>
      * @return карта пользователей со множествами мейлов <UserName, Set<Email>>
+     *
+     * Время вполнения ≈ O(2nm + m),где
+     * n - количество одинаковых пользователей
+     * m - количество уникальных email
      */
     static Map<String, Set<String>> reduceUsers(Map<String, Set<String>> data) {
         ArrayDeque<Record> replaces = new ArrayDeque<>();
@@ -69,8 +76,14 @@ public interface Logic {
     /**
      * Объединение списков пользователей
      *
-     * @param data - карта пользователей со множествами мейлов
-     * @return карта пользователей со множествами мейлов
+     * @param data - карта пользователей со множествами мейлов <UserName, Set<Email>>
+     * @return карта пользователей со множествами мейлов <UserName, Set<Email>>
+     *
+     * Время вполнения ≈ O(2nm + 2m) = O(2m(n + 1)),где
+     * n - количество одинаковых пользователей
+     * m - количество уникальных email
+     * !!! Самый медленный метод, т.к. приходится 2 раза переворачивать карту
+     * !!! Поэтому в приложении он не используется. Вместо него напрямую используется reduceUsers
      */
     static Map<String, Set<String>> merge(Map<String, Set<String>> data) {
         Map<String, Set<String>> invertData = invert(data);
